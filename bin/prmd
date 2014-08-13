@@ -29,6 +29,12 @@ commands = {
     opts.on("-y", "--yaml", "Generate YAML") do |y|
       options[:yaml] = y
     end
+    opts.on("-f", "--fields f1:t1,f2:t2", Array, "Resource fields") do |f|
+      options[:fields] = f
+    end
+    opts.on("-u", "--uuid", "Use uuid for id") do |u|
+      options[:uuid] = u
+    end
   end,
   render: OptionParser.new do |opts|
     opts.banner = "prmd render [options] <combined schema>"

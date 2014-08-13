@@ -1,16 +1,35 @@
 module Prmd
+  def self.example_for_type(t)
+    case t
+    when 'number'
+      7
+    when 'string'
+      'abcdefg'
+    when 'boolean'
+      true
+    when 'object'
+      {}
+    when 'array'
+      []
+    end
+  end
+
   def self.init(resource, options={})
     data = {
       '$schema'     => 'http://json-schema.org/draft-04/hyper-schema',
       'title'       => 'FIXME',
-      'definitions' => {},
       'description' => 'FIXME',
+      'type'        => ['object'],
+      'definitions' => {},
       'links'       => [],
       'properties'  => {},
-      'type'        => ['object']
     }
 
     schema = Prmd::Schema.new(data)
+
+    fields = options[:fields] || []
+    #name:string,age:integer
+    fields = fields.map { |x| x.split(':') }
 
     if resource
       if resource.include?('/')
@@ -19,12 +38,6 @@ module Prmd
       schema['id']    = "schemata/#{resource}"
       schema['title'] = "FIXME - #{resource[0...1].upcase}#{resource[1..-1]}"
       schema['definitions'] = {
-        "created_at" => {
-          "description" => "when #{resource} was created",
-          "example"     => "2012-01-01T12:00:00Z",
-          "format"      => "date-time",
-          "type"        => ["string"]
-        },
         "id" => {
           "description" => "unique identifier of #{resource}",
           "example"     => "01234567-89ab-cdef-0123-456789abcdef",
@@ -34,6 +47,12 @@ module Prmd
         "identity" => {
           "$ref" => "/schemata/#{resource}#/definitions/id"
         },
+        "created_at" => {
+          "description" => "when #{resource} was created",
+          "example"     => "2012-01-01T12:00:00Z",
+          "format"      => "date-time",
+          "type"        => ["string"]
+        },
         "updated_at" => {
           "description" => "when #{resource} was updated",
           "example"     => "2012-01-01T12:00:00Z",
@@ -41,16 +60,35 @@ module Prmd
           "type"        => ["string"]
         }
       }
+      if ! options[:uuid]
+        schema['definitions']['id'] = {
+          "description" => "unique identifier of #{resource}",
+          "example"     => "53eb3bb3772d583e3c030000",
+          "pattern"     => "^[a-z0-9]{24}$",
+          "type"        => ["string"]
+        }
+      end
+      fields.each { |f,t|
+        schema['definitions'][f] = {
+          "description" => "when #{resource} was updated",
+          "example"     => self.example_for_type(t),
+          "type"        => [t]
+        }
+        if f=='name'
+          schema['definitions']['identity'] = {
+            'anyOf' => [
+              {"$ref" => "/schemata/#{resource}#/definitions/id"},
+              {"$ref" => "/schemata/#{resource}#/definitions/name"}
+            ]
+          }
+        end
+      }
       schema['links'] = [
         {
           "description"   => "Create a new #{resource}.",
           "href"          => "/#{resource}s",
           "method"        => "POST",
           "rel"           => "create",
-          "schema"        => {
-            "properties"  => {},
-            "type"        => ["object"]
-          },
           "title"         => "Create"
         },
         {
@@ -79,10 +117,6 @@ module Prmd
           "href"          => "/#{resource}s/{(%2Fschemata%2F#{resource}%23%2Fdefinitions%2Fidentity)}",
           "method"        => "PATCH",
           "rel"           => "update",
-          "schema"        => {
-            "properties"  => {},
-            "type"        => ["object"]
-          },
           "title"         => "Update"
         }
       ]
@@ -96,9 +130,14 @@ module Prmd
         }
       end
       schema['properties'] = {
-        "created_at"  => { "$ref" => "/schemata/#{resource}#/definitions/created_at" },
         "id"          => { "$ref" => "/schemata/#{resource}#/definitions/id" },
+        "created_at"  => { "$ref" => "/schemata/#{resource}#/definitions/created_at" },
         "updated_at"  => { "$ref" => "/schemata/#{resource}#/definitions/updated_at" }
+      }
+      fields.each { |f,t|
+        schema['properties'][f] = {
+          "$ref" => "/schemata/#{resource}#/definitions/#{f}" 
+        }
       }
     end
 
