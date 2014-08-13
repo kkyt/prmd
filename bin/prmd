@@ -35,6 +35,9 @@ commands = {
     opts.on("-u", "--uuid", "Use uuid for id") do |u|
       options[:uuid] = u
     end
+    opts.on("-c", "--clean", "Generate clean href") do |c|
+      options[:clean] = c
+    end
   end,
   render: OptionParser.new do |opts|
     opts.banner = "prmd render [options] <combined schema>"

@@ -1,4 +1,26 @@
 module Prmd
+  def self.escape_hrefs(r)
+    if r.is_a? Array
+      r.map! { |x| 
+        self.escape_hrefs(x) 
+      }
+    elsif r.is_a? Hash
+      r.each { |k,v| 
+        if k=='href'
+          if v.is_a? String
+            v = v.gsub(/\{\(.*?\)\}/) { |x| 
+              x.gsub('#', '%23').gsub('/', '%2F')
+            }
+          end
+        else
+          v = self.escape_hrefs(v)
+        end
+        r[k] = v
+      }
+    end
+    r
+  end
+
   def self.combine(path, options={})
     files = if File.directory?(path)
       Dir.glob(File.join(path, '**', '*.json')) +
@@ -35,6 +57,8 @@ module Prmd
     end
 
     schemata.each do |schema_file, schema_data|
+      schema_data = self.escape_hrefs(schema_data)
+
       id = schema_data['id'].split('/').last
 
       if file = schemata_map[schema_data['id']]

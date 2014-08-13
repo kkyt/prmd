@@ -93,14 +93,14 @@ module Prmd
         },
         {
           "description"   => "Delete an existing #{resource}.",
-          "href"          => "/#{resource}s/{(%2Fschemata%2F#{resource}%23%2Fdefinitions%2Fidentity)}",
+          "href"          => "/#{resource}s/{(/schemata/#{resource}#/definitions/identity)}",
           "method"        => "DELETE",
           "rel"           => "destroy",
           "title"         => "Delete"
         },
         {
           "description"   => "Info for existing #{resource}.",
-          "href"          => "/#{resource}s/{(%2Fschemata%2F#{resource}%23%2Fdefinitions%2Fidentity)}",
+          "href"          => "/#{resource}s/{(/schemata/#{resource}#/definitions/identity)}",
           "method"        => "GET",
           "rel"           => "self",
           "title"         => "Info"
@@ -114,7 +114,7 @@ module Prmd
         },
         {
           "description"   => "Update an existing #{resource}.",
-          "href"          => "/#{resource}s/{(%2Fschemata%2F#{resource}%23%2Fdefinitions%2Fidentity)}",
+          "href"          => "/#{resource}s/{(/schemata/#{resource}#/definitions/identity)}",
           "method"        => "PATCH",
           "rel"           => "update",
           "title"         => "Update"
@@ -123,7 +123,7 @@ module Prmd
       if parent
         schema['links'] << {
           "description"  => "List existing #{resource}s for existing #{parent}.",
-          "href"         => "/#{parent}s/{(%2Fschemata%2F#{parent}%23%2Fdefinitions%2Fidentity)}/#{resource}s",
+          "href"         => "/#{parent}s/{(/schemata/#{parent}#/definitions/identity)}/#{resource}s",
           "method"       => "GET",
           "rel"          => "instances",
           "title"        => "List"
