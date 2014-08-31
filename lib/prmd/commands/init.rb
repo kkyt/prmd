@@ -70,7 +70,7 @@ module Prmd
       end
       fields.each { |f,t|
         schema['definitions'][f] = {
-          "description" => "when #{resource} was updated",
+          "description" => "#{resource} #{f}",
           "example"     => self.example_for_type(t),
           "type"        => [t]
         }
