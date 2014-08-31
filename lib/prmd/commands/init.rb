@@ -118,6 +118,13 @@ module Prmd
           "method"        => "PATCH",
           "rel"           => "update",
           "title"         => "Update"
+        },
+        {
+          "description"   => "Replace an existing #{resource}.",
+          "href"          => "/#{resource}s/{(/schemata/#{resource}#/definitions/identity)}",
+          "method"        => "PUT",
+          "rel"           => "create",
+          "title"         => "Put"
         }
       ]
       if parent
